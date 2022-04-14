@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script>
+    let _data = {
+      username:"nene4",
+      email: "nene4@gmail.com", 
+      password: "Andatti2."
+    }
+    var logout_json = {
+      access: "",
+      refresh: ""
+    }
+    
+    fetch('http://3.218.67.164:9041/users/login', {
+      method: "POST",
+      body: JSON.stringify(_data),
+      headers: {"Content-type": "application/json; charset=UTF-8"}
+    })
+    .then(response => response.json()) 
+    .then(json => console.log('Request1:', json))
+    .catch(err => console.log('error1:', err));
+
+    fetch('http://3.218.67.164:9041/api/token/', {
+      method: "POST",
+      body: JSON.stringify(_data),
+      headers: {"Content-type": "application/json; charset=UTF-8"}
+    })
+    .then(response => response.json()) 
+    .then(
+      (json) => {
+        logout_json["refresh"]= json["refresh"];
+        logout_json["access"] = json["access"];
+        console.log('Request2:', json)
+      })
+    .catch(err => console.log('Error:', err));
+
+    function logout(){
+      //req = JSON.stringify(logout_json)
+      //console.log('REQ:', req)
+      bearer = "Bearer "+logout_json["access"];
+      fetch('http://3.218.67.164:9041/users/logout', {
+        method: "POST",
+        body: JSON.stringify(logout_json),
+        headers: {
+          "Authorization": bearer,
+          "Content-type": "application/json; charset=UTF-8"
+      }
+    })
+    .then(response => console.log(response)) 
+    //.then(json => console.log('Request3:', json))
+    .catch(err => console.log('Error3:', err));
+    }
+
+    function refresh_token(){
+      //req = JSON.stringify(logout_json)
+      //console.log('REQ:', req)
+      bearer = "Bearer "+logout_json["access"];
+      fetch('http://3.218.67.164:9041/api/token/refresh/', {
+        method: "POST",
+        body: JSON.stringify(logout_json),
+        headers: {
+          "Authorization": bearer,
+          "Content-type": "application/json; charset=UTF-8"
+      }
+    })
+    .then(response => console.log(response)) 
+    //.then(json => console.log('Request3:', json))
+    .catch(err => console.log('Error4:', err));
+    }
+    
+</script>
+<body>
+    <input value="Boton" type="button" onclick="logout()"/> 
+    <input value="RefrescarToken" type="button" onclick="refresh_token()"/> 
+</body>
+</html>
